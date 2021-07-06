@@ -7,51 +7,67 @@ import React, { useState, useEffect } from "react";
 import NbackTest from "../nback-test/starttest.component";
 const ButtonNbackTest = () => {
   useEffect(() => {
+    setting[0].s.push(null);
     document.getElementById("button").addEventListener("click", StartTest);
-   
   }, []);
 
   const [show, setShow] = useState(false);
   const [showComponent, setShowComponent] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [setting, setSetting] = useState([]);
+  const [setting, setSetting] = useState([
+    {
+      numberOfArraySample: "",
+      t: 1000,
+      isi: 1000,
+      n: 1,
+      s: [
+        3, 8, 2, 2, 2, 5, 5, 1, 7, 5, 2, 3, 9, 4, 1, 6, 4, 4, 4, 4, 3, 3, 1, 4,
+        1,
+      ],
+      mode: "demo",
+    },
+  ]);
   let input = {
+    numberOfArraySample: "",
     t: 1000,
     isi: 1000,
-    n: "1",
-    s: [3, 8, 2, 2, 2, 5, 5, 1, 7, 5, 2, 3, 9, 4, 1, 6, 4, 4, 4, 4, 3, 3, 1, 4, 1],
-    mode:"demo",
+    n: 1,
+    s: setting[0].s,
+    mode: "demo",
   };
+
   const getSettingFromUser = (event) => {
     event.preventDefault();
     const Elements = event.target.elements;
-      input.s.push(null);
     for (const iterator of Elements) {
-      if (iterator.value !== "") {
+      if (iterator.value !== "" && iterator.name !== "mode") {
         input[iterator.name] = parseInt(iterator.value);
       }
-      if (document.getElementById("radio1").checked) {
-        let radio_value1 = document.getElementById("radio1").value;
-        input.mode = radio_value1;
-      }
-      if (document.getElementById("radio2").checked) {
-        let radio_value2 = document.getElementById("radio2").value;
-        input.mode = radio_value2;
-      }
-      if (iterator.name === "numberOfArraySample") {
-        let valueNumberOfArraySample = iterator.value;
-        if (valueNumberOfArraySample > input.s.length) {
-          input.s.map((item) => {
-            while (input.s.length <= valueNumberOfArraySample) {
-              input.s.push(item);
-            }
-          });
+      if (iterator.name === "mode") {
+        if (document.getElementById("radio1").checked) {
+          let radio_value1 = document.getElementById("radio1").value;
+          input.mode = radio_value1;
+        }
+        if (document.getElementById("radio2").checked) {
+          let radio_value2 = document.getElementById("radio2").value;
+          input.mode = radio_value2;
+        }
+        if (iterator.name === "numberOfArraySample") {
+          let valueNumberOfArraySample = iterator.value;
+          if (valueNumberOfArraySample > input.s.length) {
+            input.s.map((item) => {
+              while (input.s.length <= valueNumberOfArraySample) {
+                input.s.push(item);
+              }
+            });
+          }
         }
       }
     }
+    setting.pop(1);
     if (setting.length === 0) {
-      const tempSetting = setting;
+      let tempSetting = setting;
       tempSetting.push(input);
       setSetting(tempSetting);
     }
@@ -71,7 +87,6 @@ const ButtonNbackTest = () => {
                 <div className="offset-2 col-8">
                   <div className="jumbotron featurejumbotron fontfa">
                     <div className="container">
-                      {/* {setting[0].isi} */}
                       <Button
                         variant="primary"
                         className=" offset-3 col-6 py-3 mt-5"
@@ -91,14 +106,18 @@ const ButtonNbackTest = () => {
                             <Form.Group controlId="formBasicNumberOfElement">
                               <Form.Label>تعداد مجموعه محرک‌ها</Form.Label>
                               <Form.Control
+                                min="0"
                                 type="number"
                                 name="numberOfArraySample"
+                                defaultValue={input.numberOfArraySample}
                               />
                             </Form.Group>
                             <Form.Group controlId="formBasicTimeShow">
                               <Form.Label> زمان نمایش محرک‌ها</Form.Label>
                               <InputGroup className="mb-3 ">
                                 <Form.Control
+                                  min="0"
+                                  defaultValue={input.t}
                                   type="number"
                                   name="t"
                                   placeholder="به عنوان مثال هزار میلی‌ثانیه"
@@ -113,6 +132,8 @@ const ButtonNbackTest = () => {
                               <Form.Label> فاصله بین محرک‌ها</Form.Label>
                               <InputGroup className="mb-3">
                                 <Form.Control
+                                  min="0"
+                                  defaultValue={input.isi}
                                   type="number"
                                   name="isi"
                                   placeholder="به عنوان مثال هزار میلی‌ثانیه"
@@ -125,7 +146,12 @@ const ButtonNbackTest = () => {
                             </Form.Group>
                             <Form.Group controlId="formBasicSelectTarget">
                               <Form.Label>مقدار تعداد برو عقب</Form.Label>
-                              <Form.Control type="text" name="n" />
+                              <Form.Control
+                                type="text"
+                                name="n"
+                                min="0"
+                                defaultValue={input.n}
+                              />
                               <Form.Text className="text-muted">
                                 این اعداد باید یک عدد بدون اعشار باشد{" "}
                               </Form.Text>

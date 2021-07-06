@@ -7,6 +7,8 @@ import React, { useState, useEffect } from "react";
 import GonogoTest from "../gonogo-test/starttest.component";
 const ButtonGonogoTest = () => {
   useEffect(() => {
+    console.log(setting[0].s.length);
+    changechar();
     document.getElementById("button").addEventListener("click", StartTest);
   }, []);
 
@@ -14,41 +16,48 @@ const ButtonGonogoTest = () => {
   const [showComponent, setShowComponent] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [setting, setSetting] = useState([]);
+  const [setting, setSetting] = useState([
+    {
+      numberOfArraySample: "",
+      t: 1000,
+      isi: 1000,
+      target: "پ",
+      s: [1, 1, 1, 100, 100, 2, 1, 0, 100, 2, 100, 2, 1, 2, 100],
+      mode: "demo",
+    },
+  ]);
   let input = {
     numberOfArraySample: "",
     t: 1000,
     isi: 1000,
     target: "پ",
-    s: [1, 1, 1, 100, 100, 2, 1, 0, 100, 2, 100, 2, 1, 2, 100],
-    mode: "Demo",
+    s: setting[0].s,
+    mode: "demo",
   };
-  const getSettingFromUser = (event) => {
-    input.s.map((item, index) => {
+  const changechar = () => {
+    setting[0].s.map((item, index) => {
       if (item === 0) {
-        input.s.splice(index, 1, "ث");
+        setting[0].s.splice(index, 1, "ث");
       }
       if (item === 1) {
-        input.s.splice(index, 1, "ب");
+        setting[0].s.splice(index, 1, "ب");
       }
       if (item === 2) {
-        input.s.splice(index, 1, "ت");
+        setting[0].s.splice(index, 1, "ت");
       }
       if (item === 100) {
-        input.s.splice(index, 1, "پ");
+        setting[0].s.splice(index, 1, "پ");
       }
     });
-    console.log(input.s);
-    input.s.push(null);
+    setting[0].s.push(null);
+    console.log(setting[0].s.length);
+  };
+  const getSettingFromUser = (event) => {
     event.preventDefault();
     const Elements = event.target.elements;
     for (const iterator of Elements) {
       console.log(iterator.value);
-      if (
-        iterator.value !== "" &&
-        iterator.name !== "target" &&
-        iterator.value > 20
-      ) {
+      if (iterator.value !== "" && iterator.name !== "target") {
         input[iterator.name] = parseInt(iterator.value);
       }
       if (iterator.value !== "" && iterator.name === "target") {
@@ -79,15 +88,15 @@ const ButtonGonogoTest = () => {
         }
       }
     }
+    setting.pop(1);
     if (setting.length === 0) {
-      const tempSetting = setting;
+      let tempSetting = setting;
       tempSetting.push(input);
       setSetting(tempSetting);
     }
   };
   const StartTest = () => {
     setShowComponent(true);
-    console.log(setting[0].s);
   };
   return (
     <>
@@ -119,9 +128,9 @@ const ButtonGonogoTest = () => {
                               <Form.Label>تعداد مجموعه محرک‌ها</Form.Label>
                               <Form.Control
                                 type="number"
-                                value={setting.numberOfArraySample}
+                                min="0"
                                 name="numberOfArraySample"
-                                min="20"
+                                defaultValue={setting[0].numberOfArraySample}
                               />
                             </Form.Group>
                             <Form.Group controlId="formBasicTimeShow">
@@ -129,11 +138,11 @@ const ButtonGonogoTest = () => {
                               <InputGroup className="mb-3 ">
                                 <Form.Control
                                   type="number"
-                                  value={setting.t}
+                                  min="0"
                                   name="t"
                                   placeholder="به عنوان مثال هزار میلی‌ثانیه"
                                   className="textModal"
-                                  min="20"
+                                  defaultValue={setting[0].t}
                                 />
                                 <InputGroup.Append>
                                   <InputGroup.Text>ms</InputGroup.Text>
@@ -145,11 +154,11 @@ const ButtonGonogoTest = () => {
                               <InputGroup className="mb-3">
                                 <Form.Control
                                   type="number"
-                                  value={setting.isi}
+                                  min="0"
                                   name="isi"
                                   placeholder="به عنوان مثال هزار میلی‌ثانیه"
                                   className="textModal"
-                                  min="20"
+                                  defaultValue={setting[0].isi}
                                 />
                                 <InputGroup.Append>
                                   <InputGroup.Text>ms</InputGroup.Text>
@@ -161,7 +170,7 @@ const ButtonGonogoTest = () => {
                               <Form.Control
                                 type="text"
                                 name="target"
-                                value={setting.target}
+                                defaultValue={setting[0].target}
                               />
                               <Form.Text className="text-muted">
                                 .از بین حروف الفبا، یک حرف را وارد کنید

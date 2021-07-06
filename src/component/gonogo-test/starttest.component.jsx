@@ -249,7 +249,7 @@ const GonogoTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {props.s.length-1}
+                            {props.s.length - 1}
                           </h6>
                         </td>
                         <td>

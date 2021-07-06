@@ -19,6 +19,10 @@ const NbackTest = (props) => {
   let startTime = null;
 
   useEffect(() => {
+    console.log(typeof props.mode);
+    console.log(typeof props.isi);
+    console.log(typeof props.t);
+    console.log(typeof props.n);
     start();
   }, []);
   useEffect(() => {
@@ -36,8 +40,9 @@ const NbackTest = (props) => {
       }
     }
     setTotalCorrect(duplicates);
-
-    let totalincorrect = props.s.length -1- totalcorrect.length;
+    console.log(totalcorrect);
+    console.log(props.s);
+    let totalincorrect = props.s.length - 1 - totalcorrect.length;
     setTotalinCorrect(totalincorrect);
 
     startTime = Date.now();
@@ -46,7 +51,7 @@ const NbackTest = (props) => {
       if (count < props.s.length - 1) {
         setMode("");
         setIsToggled(true);
-         setTimeout(() => {
+        setTimeout(() => {
           setIsToggled(false);
         }, props.t);
         count++;
@@ -193,7 +198,7 @@ const NbackTest = (props) => {
             </div>
           </section>
         </>
-      ) : number === props.s.length-1 ? (
+      ) : number === props.s.length - 1 ? (
         <>
           <section className="sectionShowResult">
             <div className="container pt-5">
@@ -213,7 +218,7 @@ const NbackTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {props.s.length-1}
+                            {props.s.length - 1}
                           </h6>
                         </td>
                         <td>
