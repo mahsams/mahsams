@@ -58,7 +58,8 @@
   
 }
 .sectionStartTest .featureRow {
-  margin-top: 5rem;
+  margin-top: 55px;
+  /* margin-bottom:30px ; */
 }
 
 .sectionStartTest .featureRow .featurejumbotron {

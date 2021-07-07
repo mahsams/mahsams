@@ -110,7 +110,7 @@ const ButtonGonogoTest = () => {
                     <div className="container">
                       <Button
                         variant="primary"
-                        className=" offset-3 col-6 py-3 mt-5 px-1"
+                        className=" offset-3 col-6 py-4 mt-5 px-1"
                         onClick={handleShow}
                       >
                         تنظیمات
@@ -190,6 +190,7 @@ const ButtonGonogoTest = () => {
                                     label="demo"
                                     type={type}
                                     id="radio1"
+                                    defaultChecked = {setting[0].mode === "demo"}
                                   />
                                   <Form.Check
                                     name="mode"
@@ -219,7 +220,7 @@ const ButtonGonogoTest = () => {
                       <div className="fontfa">
                         <div className="text">
                           <button
-                            className="btn btn-primary col-md-6 col-6 py-3 mb-5"
+                            className="btn btn-primary col-md-6 col-6 py-4 mb-5"
                             type="button"
                             id="button"
                           >

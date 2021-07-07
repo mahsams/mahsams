@@ -89,7 +89,7 @@ const ButtonNbackTest = () => {
                     <div className="container">
                       <Button
                         variant="primary"
-                        className=" offset-3 col-6 py-3 px-1  mt-5" 
+                        className=" offset-3 col-6 px-1 py-4 mt-5" 
                         onClick={handleShow}
                       >
                        تنظیمات
@@ -200,7 +200,7 @@ const ButtonNbackTest = () => {
                       <div className="fontfa">
                         <div className="text">
                           <button
-                            className="btn btn-primary col-md-6 col-6 py-3 mb-5"
+                            className="btn btn-primary col-md-6 col-6 py-4 mb-5"
                             type="button"
                             id="button"
                           >

@@ -3,7 +3,7 @@ import "../router/testcomponent.style.css";
 import { useHistory } from "react-router-dom";
 
 const GonogoTest = (props) => {
-  const [showSpace, setShowSpace] = useState(false);
+  const showSpace = true;
   const history = useHistory();
   const refResponse = useRef([]);
   const refSumResponseTime = useRef(0);
@@ -24,25 +24,26 @@ const GonogoTest = (props) => {
   const [commition, setCommition] = useState([]);
   const refStetimeFaideShow = useRef();
   const refStetimeShow = useRef();
-
   useEffect(() => {
-    
-    window.addEventListener("keypress", start(refCount.current));
-    return () => {
-      window.removeEventListener("keypress", start(refCount.current));
-    };
+    window.addEventListener("keypress", startBySpace);
   }, []);
+
   useEffect(() => {
     updateValueTest();
     computingTotalCorrect();
   }, []);
   useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
-    return () => {
-      window.removeEventListener("keypress", handleKeyPress);
-    };
+      return () => {
+        
+      };
   }, []);
-
+  const startBySpace = (event) => {
+    if (event.code === "Space") {
+      start(refCount.current);
+      window.removeEventListener("keypress", startBySpace);
+    }
+  };
   const updateValueTest = () => {
     for (const iterator of props.s) {
       refResponse.current.push(props.t + props.isi);
@@ -65,7 +66,6 @@ const GonogoTest = (props) => {
   };
 
   const start = (cnt) => {
-    setShowSpace(true);
     setFeedback("");
     refCount.current = cnt;
     refStartTrial.current = Date.now();
@@ -79,7 +79,9 @@ const GonogoTest = (props) => {
       }, props.t + props.isi);
     } else {
       showResult();
+      window.removeEventListener("keypress", handleKeyPress);
     }
+
   };
 
   const handleKeyPress = (event) => {
@@ -95,10 +97,11 @@ const GonogoTest = (props) => {
           clearTimeout(refStetimeFaideShow.current);
           clearTimeout(refStetimeShow.current);
           setCurrentTarget("");
-          let RemainedTime = props.t - refResponse.current[refCount.current];
-          setTimeout(() => {
-            start(refCount.current + 1);
-          }, props.isi - RemainedTime);
+          if (refCount.current <= props.s.length) {
+            setTimeout(() => {
+              start(refCount.current + 1);
+            }, props.isi);
+          }
           if (props.mode === "demo") {
             handleFeedback();
           }
@@ -198,32 +201,31 @@ const GonogoTest = (props) => {
 
   return (
     <>
-      {showSpace == true && refCount.current === -1 ? (
+      {showSpace === true && refCount.current === -1 ? (
         <>
-        <div className="container">
-              <div className="row  featureRow d-flex flex-column align-items-center">
-                <div className="col-8 mt-5 d-flex justify-content-center">
-                  <div className="featurejumbotron">
-                    <div className="container">
-                      <div className="fontfa">
-                        <p
-                          className="text d-flex justify-content-center"
-                          style={{
-                            marginTop: "12rem",
-                            fontSize: "50px",
-                            // position: "fixed",
-                          }}
-                        >
-                        با زدن اسپیس بازی را شروع کنید<br/>
-                        
-                        </p>
-                      </div>
+          <div className="container">
+            <div className="row  featureRow d-flex flex-column align-items-center">
+              <div className="col-8 mt-5 d-flex justify-content-center">
+                <div className="featurejumbotron">
+                  <div className="container">
+                    <div className="fontfa">
+                      <p
+                        className="text d-flex justify-content-center"
+                        style={{
+                          marginTop: "12rem",
+                          fontSize: "50px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        با زدن اسپیس بازی را شروع کنید
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            </>
+          </div>
+        </>
       ) : refCount.current > -1 && refCount.current <= props.s.length - 2 ? (
         <>
           <section className="sectionShowNumber">
