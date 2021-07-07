@@ -89,10 +89,10 @@ const ButtonNbackTest = () => {
                     <div className="container">
                       <Button
                         variant="primary"
-                        className=" offset-3 col-6 py-3 mt-5"
+                        className=" offset-3 col-6 py-3 px-1  mt-5" 
                         onClick={handleShow}
                       >
-                        تنظیمات
+                       تنظیمات
                       </Button>
                       <Modal
                         show={show}
@@ -170,6 +170,7 @@ const ButtonNbackTest = () => {
                                     label="demo"
                                     type={type}
                                     id="radio1"
+                                    defaultChecked = {setting[0].mode === "demo"}
                                   />
                                   <Form.Check
                                     name="mode"

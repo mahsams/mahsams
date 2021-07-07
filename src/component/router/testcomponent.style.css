@@ -26,15 +26,16 @@
 }
 
 .sectionShowNumber .featureRow {
-  margin-top: 7rem;
+  margin-top: 4rem;
 }
 
 .sectionShowNumber .featureRow .featurejumbotron {
-  background-color: #e9ecef;
-  margin-top: 2rem;
+  background-color: #ffffff;
+  margin-top: 1rem;
 }
 .sectionShowNumber .featureRow .fontfa {
   font-family: "Nazanin";
+  font-size: 100px;
 }
 .sectionShowNumber .fontfa .text {
   font-size: 5rem;
@@ -53,6 +54,8 @@
 }
 .showFeedback .alignFeedback {
   text-align: center;
+  /* margin-top: 100px; */
+  
 }
 .sectionStartTest .featureRow {
   margin-top: 5rem;

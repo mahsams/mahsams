@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import "../router/testcomponent.style.css";
 
 const NbackTest = (props) => {
+  const [showSpace, setShowSpace] = useState(false);
   const history = useHistory();
   const [number, setNumber] = useState(-1);
   const [isToggled, setIsToggled] = useState(true);
@@ -17,14 +18,15 @@ const NbackTest = (props) => {
   const [time, setTime] = useState([]);
   const [finaltimeresponse, setFianlTimeResponse] = useState(0);
   let startTime = null;
+  let refStartTrial = useRef(null);
 
   useEffect(() => {
-    console.log(typeof props.mode);
-    console.log(typeof props.isi);
-    console.log(typeof props.t);
-    console.log(typeof props.n);
-    start();
+    window.addEventListener("keypress", start());
+    return () => {
+      window.removeEventListener("keypress", start());
+    };
   }, []);
+
   useEffect(() => {
     window.addEventListener("keypress", handleUserKeyPress);
     return () => {
@@ -33,6 +35,7 @@ const NbackTest = (props) => {
   }, []);
 
   const start = () => {
+    setShowSpace(true);
     let duplicates = totalcorrect;
     for (let i = 0; i < props.s.length; i++) {
       if (props.s[i + props.n] === props.s[i]) {
@@ -49,6 +52,7 @@ const NbackTest = (props) => {
     let count = -1;
     let Timer = setInterval(function () {
       if (count < props.s.length - 1) {
+        refStartTrial.current = Date.now();
         setMode("");
         setIsToggled(true);
         setTimeout(() => {
@@ -71,6 +75,16 @@ const NbackTest = (props) => {
         temp.push(GetTimeSpace);
         setSpaces(temp);
         if (props.mode === "demo") {
+          // console.log(refStartTrial.current[]);
+          // let timeRemind = spaces[spaces.length - 1] - refStartTrial.current;
+          // let timeRemindeTOt = props.t - timeRemind;
+          // let timeRemindeTOisi = props.isi + timeRemindeTOt;
+          // if (timeRemind < props.t) {
+          //   setTimeout(() => {
+          //     setIsToggled(true);
+          //   }, timeRemindeTOisi);
+          // }
+          // console.log(timeRemind);
           handleFeedback();
         }
       } else {
@@ -95,7 +109,6 @@ const NbackTest = (props) => {
     let c = props.s[currentSlot - 1];
     let n = props.n;
     let l = currentSlot - 1 - n;
-
     if (c === props.s[l]) {
       setMode(true);
 
@@ -108,8 +121,8 @@ const NbackTest = (props) => {
       numberCorrect.push(currentSlot);
       setNumberCorrect(numberCorrect);
     } else {
-      setMode(false);
-
+      setMode("");
+      ///////////
       let numberinCorrect = incorrect;
       numberinCorrect.push(currentSlot);
       setNumberInCorrect(numberinCorrect);
@@ -142,31 +155,59 @@ const NbackTest = (props) => {
 
   return (
     <>
-      {number <= props.s.length - 2 ? (
+      {showSpace == true && number === -1 ? (
+        <>
+          <div className="container">
+            <div className="row  featureRow d-flex flex-column align-items-center">
+              <div className="col-8 mt-5 d-flex justify-content-center">
+                <div className="featurejumbotron">
+                  <div className="container">
+                    <div className="fontfa">
+                      <p
+                        className="text d-flex justify-content-center"
+                        style={{
+                          marginTop: "12rem",
+                          fontSize: "50px",
+                          // position: "fixed",
+                        }}
+                      >
+                        با زدن اسپیس بازی را شروع کنید
+                        <br />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : number > -1 && number <= props.s.length - 2 ? (
         <>
           <section className="sectionShowNumber">
             <div className="container">
-              <div className="row featureRow">
-                <div className="offset-2 col-8">
-                  <div
-                    className="jumbotron featurejumbotron"
-                    style={{ height: "17rem" }}
-                  >
+              <div className="row featureRow d-flex flex-column align-items-center">
+                <div className="col-8">
+                  <div className="featurejumbotron">
                     <div className="container d-flex justify-content-center">
                       {isToggled === true ? (
                         <>
                           {number > -1 && number < props.s.length ? (
                             <>
                               <div
-                                className=" col-md-2 py-3 col-4 fontfa"
+                                className=" col-md-2 py-3 col-4 fontfa d-flex justify-content-center"
                                 style={{
-                                  backgroundColor: "blue",
-                                  textAlign: "center",
-                                  color: "white",
+                                  color: "black",
                                   marginTop: "4rem",
                                 }}
                               >
-                                {props.s[number]}
+                                <p
+                                  style={{
+                                    fontSize: "200px",
+                                    position: "fixed",
+                                  }}
+                                >
+                                  {props.s[number]}
+                                </p>
                               </div>
                             </>
                           ) : null}
@@ -178,18 +219,18 @@ const NbackTest = (props) => {
               </div>
             </div>
           </section>
-          <section className="showFeedback">
-            <div className="container d-flex justify-content-center">
+          <section className="showFeedback ">
+            <div className="container d-flex flex-column align-items-center justify-content-center">
               <div className="row">
                 <div className="my-5">
                   <div className="fontfa alignFeedback">
-                    {mode === true ? (
+                    {mode === true && isToggled === false ? (
                       <>
-                        <h1>درست</h1>
+                        <p style={{ fontSize: "100px",marginTop: "100px" }}>درست</p>
                       </>
-                    ) : mode === false ? (
+                    ) : mode === false && isToggled === false ? (
                       <>
-                        <h1>غلط</h1>
+                        <p style={{ fontSize: "100px",marginTop: "100px" }}>غلط</p>
                       </>
                     ) : null}
                   </div>
@@ -349,7 +390,7 @@ const NbackTest = (props) => {
                   </table>
                   <div className="container d-flex justify-content-center">
                     <button
-                      className="btn btn-primary btn-lg col-md-2 col-4 my-3 fontfa"
+                      className="btn btn-primary btn-lg col-md-2 col-4 my-3 pt-3  fontfa"
                       type="button"
                       onClick={handleClick}
                     >

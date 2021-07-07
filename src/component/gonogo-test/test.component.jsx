@@ -110,7 +110,7 @@ const ButtonGonogoTest = () => {
                     <div className="container">
                       <Button
                         variant="primary"
-                        className=" offset-3 col-6 py-3 mt-5"
+                        className=" offset-3 col-6 py-3 mt-5 px-1"
                         onClick={handleShow}
                       >
                         تنظیمات

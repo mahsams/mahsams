@@ -3,6 +3,7 @@ import "../router/testcomponent.style.css";
 import { useHistory } from "react-router-dom";
 
 const GonogoTest = (props) => {
+  const [showSpace, setShowSpace] = useState(false);
   const history = useHistory();
   const refResponse = useRef([]);
   const refSumResponseTime = useRef(0);
@@ -13,7 +14,7 @@ const GonogoTest = (props) => {
   const [currentTarget, setCurrentTarget] = useState("");
   const [spaces, setSpaces] = useState([]);
   const [feedback, setFeedback] = useState("");
-  const refCount = useRef(0);
+  const refCount = useRef(-1);
   const refStartTrial = useRef(null);
   const [totalInCorrect, setTotalInCorrect] = useState([]);
   const [totalCorrect, setTotalCorrect] = useState([]);
@@ -25,12 +26,16 @@ const GonogoTest = (props) => {
   const refStetimeShow = useRef();
 
   useEffect(() => {
-    console.log(props.mode);
+    
+    window.addEventListener("keypress", start(refCount.current));
+    return () => {
+      window.removeEventListener("keypress", start(refCount.current));
+    };
+  }, []);
+  useEffect(() => {
     updateValueTest();
-    start(refCount.current);
     computingTotalCorrect();
   }, []);
-
   useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
     return () => {
@@ -60,6 +65,7 @@ const GonogoTest = (props) => {
   };
 
   const start = (cnt) => {
+    setShowSpace(true);
     setFeedback("");
     refCount.current = cnt;
     refStartTrial.current = Date.now();
@@ -192,16 +198,51 @@ const GonogoTest = (props) => {
 
   return (
     <>
-      {refCount.current <= props.s.length - 2 ? (
+      {showSpace == true && refCount.current === -1 ? (
+        <>
+        <div className="container">
+              <div className="row  featureRow d-flex flex-column align-items-center">
+                <div className="col-8 mt-5 d-flex justify-content-center">
+                  <div className="featurejumbotron">
+                    <div className="container">
+                      <div className="fontfa">
+                        <p
+                          className="text d-flex justify-content-center"
+                          style={{
+                            marginTop: "12rem",
+                            fontSize: "50px",
+                            // position: "fixed",
+                          }}
+                        >
+                        با زدن اسپیس بازی را شروع کنید<br/>
+                        
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </>
+      ) : refCount.current > -1 && refCount.current <= props.s.length - 2 ? (
         <>
           <section className="sectionShowNumber">
             <div className="container">
-              <div className="row featureRow">
-                <div className="offset-2 col-8">
-                  <div className="jumbotron featurejumbotron">
+              <div className="row featureRow d-flex flex-column align-items-center">
+                <div className="col-8 d-flex justify-content-center">
+                  <div className="featurejumbotron">
                     <div className="container">
                       <div className="fontfa">
-                        <p className="text">{currentTarget}</p>
+                        <p
+                          className="text d-flex justify-content-center"
+                          style={{
+                            marginTop: "2rem",
+                            fontSize: "200px",
+                            // position: "fixed",
+                          }}
+                        >
+                          {currentTarget}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -210,17 +251,17 @@ const GonogoTest = (props) => {
             </div>
           </section>
           <section className="showFeedback">
-            <div className="container d-flex justify-content-center">
+            <div className="container d-flex flex-column align-items-center justify-content-center">
               <div className="row">
-                <div className="my-5">
+                <div className="">
                   <div className="fontfa alignFeedback">
                     {feedback === true ? (
                       <>
-                        <h1>درست</h1>
+                        <p style={{ fontSize: "100px" }}>درست</p>
                       </>
                     ) : feedback === false ? (
                       <>
-                        <h1>غلط</h1>
+                        <p style={{ fontSize: "100px" }}>غلط</p>
                       </>
                     ) : null}
                   </div>
