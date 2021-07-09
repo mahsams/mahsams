@@ -53,15 +53,25 @@ const ButtonNbackTest = () => {
           let radio_value2 = document.getElementById("radio2").value;
           input.mode = radio_value2;
         }
-        if (iterator.name === "numberOfArraySample") {
-          let valueNumberOfArraySample = iterator.value;
-          if (valueNumberOfArraySample > input.s.length) {
-            input.s.map((item) => {
-              while (input.s.length <= valueNumberOfArraySample) {
-                input.s.push(item);
-              }
-            });
-          }
+      }
+      if (iterator.name === "numberOfArraySample") {
+        let valueNumberOfArraySample = iterator.value;
+        if (valueNumberOfArraySample > input.s.length) {
+          input.s.pop();
+          input.s.map((item) => {
+            while (input.s.length <= valueNumberOfArraySample) {
+              input.s.push(item);
+            }
+          });
+          input.s.push(null);
+        }
+        if (
+          valueNumberOfArraySample < input.s.length &&
+          valueNumberOfArraySample !== ""
+        ) {
+          input.s.splice(valueNumberOfArraySample);
+          input.s.push(null);
+          console.log("hdvdu");
         }
       }
     }
@@ -89,10 +99,10 @@ const ButtonNbackTest = () => {
                     <div className="container">
                       <Button
                         variant="primary"
-                        className=" offset-3 col-6 px-1 py-4 mt-5" 
+                        className=" offset-3 col-6 px-1 py-4 mt-5"
                         onClick={handleShow}
                       >
-                       تنظیمات
+                        تنظیمات
                       </Button>
                       <Modal
                         show={show}
@@ -109,7 +119,6 @@ const ButtonNbackTest = () => {
                                 min="0"
                                 type="number"
                                 name="numberOfArraySample"
-                                defaultValue={input.numberOfArraySample}
                               />
                             </Form.Group>
                             <Form.Group controlId="formBasicTimeShow">
@@ -170,7 +179,7 @@ const ButtonNbackTest = () => {
                                     label="demo"
                                     type={type}
                                     id="radio1"
-                                    defaultChecked = {setting[0].mode === "demo"}
+                                    defaultChecked={setting[0].mode === "demo"}
                                   />
                                   <Form.Check
                                     name="mode"

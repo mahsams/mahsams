@@ -74,17 +74,20 @@ const ButtonGonogoTest = () => {
       if (iterator.name === "numberOfArraySample") {
         let valueNumberOfArraySample = iterator.value;
         if (valueNumberOfArraySample > input.s.length) {
+          input.s.pop();
           input.s.map((item) => {
             while (input.s.length <= valueNumberOfArraySample) {
               input.s.push(item);
             }
           });
+          input.s.push(null);
         }
         if (
           valueNumberOfArraySample < input.s.length &&
           valueNumberOfArraySample !== ""
         ) {
           input.s.splice(valueNumberOfArraySample);
+          input.s.push(null);
         }
       }
     }

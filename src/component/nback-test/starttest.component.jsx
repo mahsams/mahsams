@@ -1,164 +1,215 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { useHistory } from "react-router-dom";
 import "../router/testcomponent.style.css";
+import { useHistory } from "react-router-dom";
 
 const NbackTest = (props) => {
   const showSpace = true;
   const history = useHistory();
-  const [number, setNumber] = useState(-1);
-  const [isToggled, setIsToggled] = useState(true);
-  const [mode, setMode] = useState();
+  const refResponse = useRef([]);
+  const refSumResponseTime = useRef(0);
+  const refAverageCorrectResponseTime = useRef(0);
+  const refTargets = useRef([]);
+  const refResults = useRef([]);
+  const refReactions = useRef([]);
+  const [currentTarget, setCurrentTarget] = useState("");
   const [spaces, setSpaces] = useState([]);
-  const [totalcorrect, setTotalCorrect] = useState([]);
-  const [totalincorrect, setTotalinCorrect] = useState();
-  const [correct, setNumberCorrect] = useState([]);
-  const [incorrect, setNumberInCorrect] = useState([]);
-  const [ommision, setOmmision] = useState(0);
-  const [timeresponse, setTimeResponse] = useState([]);
-  const [time, setTime] = useState([]);
-  const [finaltimeresponse, setFianlTimeResponse] = useState(0);
-  let startTime = null;
-  let refStartTrial = useRef(null);
-
+  const [feedback, setFeedback] = useState("");
+  const refCount = useRef(-1);
+  const refStartTrial = useRef(null);
+  const [totalInCorrect, setTotalInCorrect] = useState([]);
+  const [totalCorrect, setTotalCorrect] = useState([]);
+  const [correctdeterrent, setCorrectDeterrent] = useState([]);
+  const [correct, setCorrect] = useState([]);
+  const [ommition, setOmmition] = useState([]);
+  const [commition, setCommition] = useState([]);
+  const refStetimeFaideShow = useRef();
+  const refStetimeShow = useRef();
   useEffect(() => {
     window.addEventListener("keypress", startBySpace);
   }, []);
 
   useEffect(() => {
-    window.addEventListener("keypress", handleUserKeyPress);
+    console.log(props.s);
+    updateValueTest();
+  }, []);
+  useEffect(() => {
+    window.addEventListener("keypress", handleKeyPress);
+    return () => {};
   }, []);
   const startBySpace = (event) => {
     if (event.code === "Space") {
-      start();
+      start(refCount.current);
       window.removeEventListener("keypress", startBySpace);
     }
   };
-  const start = () => {
-    let duplicates = totalcorrect;
-    for (let i = 0; i < props.s.length; i++) {
-      if (props.s[i + props.n] === props.s[i]) {
-        duplicates.push(props.s[i]);
+  const updateValueTest = () => {
+    for (let index = 0; index <= props.n; index++) {
+      refTargets.current[index] = 0;
+    }
+    for (let index = props.n; index < props.s.length; index++) {
+      refResponse.current.push(props.t + props.isi);
+      refResults.current.push(false);
+      refReactions.current.push(false);
+      if (props.s[index - props.n] === props.s[index]) {
+        refTargets.current[index] = 1;
+      } else {
+        refTargets.current[index] = 0;
       }
     }
-    setTotalCorrect(duplicates);
-    console.log(totalcorrect);
-    console.log(props.s);
-    let totalincorrect = props.s.length - 1 - totalcorrect.length;
-    setTotalinCorrect(totalincorrect);
-
-    startTime = Date.now();
-    let count = -1;
-    let Timer = setInterval(function () {
-      if (count < props.s.length - 1) {
-        refStartTrial.current = Date.now();
-        setMode("");
-        setIsToggled(true);
-        setTimeout(() => {
-          setIsToggled(false);
-        }, props.t);
-        count++;
-        setNumber(count);
-      } else {
-        clearInterval(Timer);
-        showResult();
-        window.removeEventListener("keypress", handleUserKeyPress);
-      }
-    }, props.isi + props.t);
   };
 
-  const handleUserKeyPress = (event) => {
+  const start = (cnt) => {
+    setFeedback("");
+    refCount.current = cnt;
+    refStartTrial.current = Date.now();
+    setCurrentTarget(props.s[cnt]);
+    refStetimeFaideShow.current = setTimeout(() => {
+      setCurrentTarget("");
+    }, props.t);
+    if (cnt < props.s.length - 1) {
+      refStetimeShow.current = setTimeout(() => {
+        start(cnt + 1);
+      }, props.t + props.isi);
+    } else {
+      showResult();
+      window.removeEventListener("keypress", handleKeyPress);
+    }
+  };
+
+  const handleKeyPress = (event) => {
     if (event.code === "Space") {
-      const GetTimeSpace = Date.now();
-      if (spaces.length <= 0) {
-        let temp = spaces;
-        temp.push(GetTimeSpace);
-        setSpaces(temp);
-        if (props.mode === "demo") {
-          // console.log(refStartTrial.current[]);
-          // let timeRemind = spaces[spaces.length - 1] - refStartTrial.current;
-          // let timeRemindeTOt = props.t - timeRemind;
-          // let timeRemindeTOisi = props.isi + timeRemindeTOt;
-          // if (timeRemind < props.t) {
-          //   setTimeout(() => {
-          //     setIsToggled(true);
-          //   }, timeRemindeTOisi);
-          // }
-          // console.log(timeRemind);
-          handleFeedback();
-        }
-      } else {
-        const lastItemSpaces = spaces[spaces.length - 1];
-        const passedTime = (startTime - GetTimeSpace) * -1;
-        const currentSlot = Math.floor(passedTime / (props.isi + props.t));
-        const lastSpace = (startTime - lastItemSpaces) * -1;
-        const lastSpaceSlot = Math.floor(lastSpace / (props.isi + props.t));
-        if (currentSlot !== lastSpaceSlot) {
-          let temp = spaces;
-          temp.push(GetTimeSpace);
-          setSpaces(temp);
-          if (props.mode === "demo") {
-            handleFeedback(currentSlot);
+      let timeSpace = Date.now();
+      if (refCount.current >= props.n) {
+        if (refResponse.current[refCount.current] === props.t + props.isi) {
+          let tempSpaces = spaces;
+          tempSpaces.push(timeSpace);
+          setSpaces(tempSpaces);
+          refResponse.current[refCount.current] =
+            timeSpace - refStartTrial.current;
+          if (refResponse.current[refCount.current] < props.t) {
+            clearTimeout(refStetimeFaideShow.current);
+            clearTimeout(refStetimeShow.current);
+            setCurrentTarget("");
+            if (refCount.current <= props.s.length) {
+              setTimeout(() => {
+                start(refCount.current + 1);
+              }, props.isi);
+            }
+            if (props.mode === "demo") {
+              handleFeedback(refCount.current);
+            }
+          } else {
+            if (props.mode === "demo") {
+              handleFeedback(refCount.current);
+            }
           }
         }
+        refReactions.current[refCount.current] = true;
+        console.log(refCount.current);
+       
       }
     }
   };
 
-  const handleFeedback = (currentSlot = 1) => {
-    if (number <= props.n) {
-      console.log("mmm");
-      setMode("");
-    }
-    let c = props.s[currentSlot - 1];
-    let n = props.n;
-    let l = currentSlot - 1 - n;
-    if (c === props.s[l]) {
-      setMode(true);
-
-      let arrayCorrectTime = timeresponse;
-      let lastSpace = spaces[spaces.length - 1];
-      arrayCorrectTime.push(lastSpace);
-      setTimeResponse(arrayCorrectTime);
-
-      let numberCorrect = correct;
-      numberCorrect.push(currentSlot);
-      setNumberCorrect(numberCorrect);
+  const handleFeedback = () => {
+    console.log(props.s[refCount.current - props.n], props.s[refCount.current]);
+    if (props.s[refCount.current - props.n] === props.s[refCount.current]) {
+      setFeedback(true);
     } else {
-      setMode(false);
-      ///////////
-      let numberinCorrect = incorrect;
-      numberinCorrect.push(currentSlot);
-      setNumberInCorrect(numberinCorrect);
+      setFeedback(false);
     }
   };
 
   const showResult = () => {
-    let omision = totalcorrect.length - correct.length;
-    setOmmision(omision);
-
-    let slotCorrect = correct.map((item) => {
-      return startTime + item * (props.isi + props.t);
-    });
-    for (let i = 0; i < slotCorrect.length; i++) {
-      let averagetimeresponse = timeresponse[i] - slotCorrect[i];
-      let times = time;
-      times.push(averagetimeresponse);
-      setTime(times);
+    for (let index = 0; index < props.s.length - 1; index++) {
+      if (
+        refTargets.current[index] === 1 &&
+        refReactions.current[index] === true &&
+        props.s[index] !== null
+      ) {
+        refResults.current[index] = "A";
+        let tempCorrect = correct;
+        tempCorrect.push(index);
+        setCorrect(tempCorrect);
+      }
+      if (
+        refTargets.current[index] === 0 &&
+        refReactions.current[index] === false &&
+        props.s[index] !== null
+      ) {
+        refResults.current[index] = "B";
+      }
+      if (
+        refTargets.current[index] === 0 &&
+        refReactions.current[index] === true &&
+        props.s[index] !== null
+      ) {
+        refResults.current[index] = "C";
+      }
+      if (
+        refTargets.current[index] === 1 &&
+        refReactions.current[index] === false &&
+        props.s[index] !== null
+      ) {
+        refResults.current[index] = "D";
+      }
     }
+    for (let index = 0; index < refResults.current.length; index++) {
+      if (refResults.current[index] === "B" && props.s[index] !== null) {
+        let tempCorrectDeterrent = correctdeterrent;
+        tempCorrectDeterrent.push(index);
+        setCorrectDeterrent(tempCorrectDeterrent);
+      }
+      if (refResults.current[index] === "D" && props.s[index] !== null) {
+        let tempOmmition = ommition;
+        tempOmmition.push(index);
+        setOmmition(tempOmmition);
+      }
+      if (refResults.current[index] === "C" && props.s[index] !== null) {
+        let tempCommition = commition;
+        tempCommition.push(index);
+        setCommition(tempCommition);
+      }
+      if (
+        refResults.current[index] === "B" ||
+        (refResults.current[index] === "C" && props.s[index] !== null)
+      ) {
+        let tempTotalInCorrect = totalInCorrect;
+        tempTotalInCorrect.push(index);
+        setTotalInCorrect(tempTotalInCorrect);
+      }
+      if (
+        refResults.current[index] === "A" ||
+        (refResults.current[index] === "D" && props.s[index] !== null)
+      ) {
+        let tempTotalCorrect = totalCorrect;
+        tempTotalCorrect.push(index);
+        setTotalCorrect(tempTotalCorrect);
+      }
+    }
+    console.log(refResults.current);
+    console.log(refReactions.current);
+    console.log(refTargets.current);
+    let SumCorrectResponseTime = correct.map((item) => {
+      return refResponse.current[item];
+    });
+    refSumResponseTime.current = SumCorrectResponseTime.reduce(
+      (a, b) => a + b,
+      0
+    );
     if (correct.length !== 0) {
-      let sub = time.reduce((a, b) => a + b, 0);
-      let averageTime = sub / correct.length;
-      setFianlTimeResponse(averageTime);
+      refAverageCorrectResponseTime.current =
+        refSumResponseTime.current / correct.length;
     }
   };
-
   function handleClick() {
     history.push("/");
   }
 
   return (
     <>
-      {showSpace === true && number === -1 ? (
+      {showSpace === true && refCount.current === -1 ? (
         <>
           <div className="container">
             <div className="row  featureRow d-flex flex-column align-items-center">
@@ -171,12 +222,10 @@ const NbackTest = (props) => {
                         style={{
                           marginTop: "12rem",
                           fontSize: "50px",
-                          // position: "fixed",
                           whiteSpace: "nowrap",
                         }}
                       >
                         با زدن اسپیس بازی را شروع کنید
-                        <br />
                       </p>
                     </div>
                   </div>
@@ -185,60 +234,44 @@ const NbackTest = (props) => {
             </div>
           </div>
         </>
-      ) : number > -1 && number <= props.s.length - 2 ? (
+      ) : refCount.current > -1 && refCount.current <= props.s.length - 2 ? (
         <>
           <section className="sectionShowNumber">
             <div className="container">
               <div className="row featureRow d-flex flex-column align-items-center">
-                <div className="col-8">
+                <div className="col-8 d-flex justify-content-center">
                   <div className="featurejumbotron">
-                    <div className="container d-flex justify-content-center">
-                      {isToggled === true ? (
-                        <>
-                          {number > -1 && number < props.s.length ? (
-                            <>
-                              <div
-                                className=" col-md-2 py-3 col-4 fontfa d-flex justify-content-center"
-                                style={{
-                                  color: "black",
-                                  marginTop: "4rem",
-                                }}
-                              >
-                                <p
-                                  style={{
-                                    fontSize: "200px",
-                                    position: "fixed",
-                                  }}
-                                >
-                                  {props.s[number]}
-                                </p>
-                              </div>
-                            </>
-                          ) : null}
-                        </>
-                      ) : null}
+                    <div className="container">
+                      <div className="fontfa">
+                        <p
+                          className="text d-flex justify-content-center"
+                          style={{
+                            marginTop: "2rem",
+                            fontSize: "200px",
+                            // position: "fixed",
+                          }}
+                        >
+                          {currentTarget}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </section>
-          <section className="showFeedback ">
+          <section className="showFeedback">
             <div className="container d-flex flex-column align-items-center justify-content-center">
               <div className="row">
-                <div className="my-5">
+                <div className="">
                   <div className="fontfa alignFeedback">
-                    {mode === true && isToggled === false ? (
+                    {feedback === true ? (
                       <>
-                        <p style={{ fontSize: "100px", marginTop: "100px" }}>
-                          درست
-                        </p>
+                        <p style={{ fontSize: "100px" }}>درست</p>
                       </>
-                    ) : mode === false && isToggled === false ? (
+                    ) : feedback === false ? (
                       <>
-                        <p style={{ fontSize: "100px", marginTop: "100px" }}>
-                          غلط
-                        </p>
+                        <p style={{ fontSize: "100px" }}>غلط</p>
                       </>
                     ) : null}
                   </div>
@@ -247,14 +280,14 @@ const NbackTest = (props) => {
             </div>
           </section>
         </>
-      ) : number === props.s.length - 1 ? (
+      ) : refCount.current === props.s.length - 1 ? (
         <>
           <section className="sectionShowResult">
             <div className="container pt-5">
               <div className="row colorTitleSectionShowResult">
                 <div className="offset-2 col-10 ">
                   <h5 className="fontfa py-2 directionContentTable">
-                    N-back نتیجه آزمون
+                    نتیجه آزمون برو نرو
                   </h5>
                 </div>
               </div>
@@ -306,26 +339,26 @@ const NbackTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {totalcorrect.length}
+                            {totalCorrect.length}
                           </h6>
                         </td>
                         <td>
                           <h6 className="directionContentTable fontfa p-1">
                             {" "}
-                            تعداد کل پاسخ صحیح
+                            تعداد کل محرک هدف
                           </h6>
                         </td>
                       </tr>
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {totalincorrect}
+                            {totalInCorrect.length}
                           </h6>
                         </td>
                         <td>
                           <h6 className="directionContentTable fontfa p-1">
                             {" "}
-                            تعداد کل پاسخ غلط
+                            تعداد کل محرک غیر هدف
                           </h6>
                         </td>
                       </tr>
@@ -345,7 +378,20 @@ const NbackTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {finaltimeresponse} ms
+                            {refSumResponseTime.current}
+                          </h6>
+                        </td>
+                        <td>
+                          <h6 className="directionContentTable fontfa p-1">
+                            {" "}
+                            زمان پاسخ صحیح{" "}
+                          </h6>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h6 className="directionResultTable p-1">
+                            {refAverageCorrectResponseTime.current}
                           </h6>
                         </td>
                         <td>
@@ -358,7 +404,7 @@ const NbackTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {ommision}
+                            {ommition.length}
                           </h6>
                         </td>
                         <td>
@@ -371,7 +417,7 @@ const NbackTest = (props) => {
                       <tr>
                         <td>
                           <h6 className="directionResultTable p-1">
-                            {incorrect.length}
+                            {commition.length}
                           </h6>
                         </td>
                         <td>
@@ -381,28 +427,16 @@ const NbackTest = (props) => {
                           </h6>
                         </td>
                       </tr>
-                      <tr>
-                        <td>
-                          <h6 className="directionResultTable p-1">
-                            {ommision + incorrect.length}
-                          </h6>
-                        </td>
-                        <td>
-                          <h6 className="directionContentTable fontfa p-1">
-                            {" "}
-                            تمام خطاهای کاربر (commision+ommision){" "}
-                          </h6>
-                        </td>
-                      </tr>
                     </tbody>
                   </table>
+
                   <div className="container d-flex justify-content-center">
                     <button
-                      className="btn btn-primary btn-lg col-md-2 col-4  my-3 pt-3  fontfa"
+                      className="btn btn-primary btn-lg col-md-2 col-4 my-3 fontfa"
                       type="button"
                       onClick={handleClick}
                     >
-                      <p>شروع مجدد آزمون</p>
+                      شروع مجدد آزمون
                     </button>
                   </div>
                 </div>
@@ -414,4 +448,5 @@ const NbackTest = (props) => {
     </>
   );
 };
+
 export default NbackTest;
